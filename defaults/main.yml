@@ -1,0 +1,8 @@
+courier_imap_imapd_ssl_enabled: True
+courier_imap_imapd_maxdaemons: 40
+courier_imap_imapd_maxperip: 4
+courier_imap_imapd_tls_certfile: /usr/local/share/courier-imap/imapd.pem
+courier_imap_pop3d_ssl_enabled: True
+courier_imap_pop3d_maxdaemons: 40
+courier_imap_pop3d_maxperip: 4
+courier_imap_pop3d_tls_certfile: /usr/local/share/courier-imap/pop3d.pem

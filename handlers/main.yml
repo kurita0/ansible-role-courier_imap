@@ -1,0 +1,9 @@
+---
+- name: restart courier-authdaemond
+  service: name=courier-authdaemond state=restarted
+
+- name: restart courier-imap-imapd-ssl
+  service: name=courier-imap-imapd-ssl state=restarted
+
+- name: restart courier-imap-pop3d-ssl
+  service: name=courier-imap-pop3d-ssl state=restarted

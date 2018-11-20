@@ -1,0 +1,4 @@
+/var/log/imapd.log                      640  7     100  *     JC
+/var/log/imapd-ssl.log                  640  7     100  *     JC
+/var/log/pop3d.log                      640  7     100  *     JC
+/var/log/pop3d-ssl.log                  640  7     100  *     JC

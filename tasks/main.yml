@@ -1,0 +1,72 @@
+---
+- name: Install courier-imap
+  pkgng: name={{ item }} state=present
+  with_items:
+    - courier-imap
+
+- name: Create dhparams.pem
+  command:
+    /usr/local/share/courier-imap/mkdhparams
+    creates=/usr/local/share/courier-imap/dhparams.pem
+  environment:
+    DH_BITS: 2048
+
+- stat: path=/var/log/imapd.log
+  register: var_log_imapd_log
+- name: Create log files
+  file: path={{ item }} state=touch
+  with_items:
+    - /var/log/imapd.log
+    - /var/log/imapd-ssl.log 
+    - /var/log/pop3d.log
+    - /var/log/pop3d-ssl.log
+  when: var_log_imapd_log.stat.exists is defined and not var_log_imapd_log.stat.exists
+
+- name: syslog.d/courier-imap.conf
+  copy: src=courier-imap.conf dest=/usr/local/etc/syslog.d/courier-imap.conf mode=0644
+  notify: restart syslog
+
+- name: newsyslog.conf.d/courier-imap
+  copy: src=courier-imap dest=/usr/local/etc/newsyslog.conf.d/courier-imap mode=0644
+  notify: restart newsyslog
+
+- name: Copy authdaemond conf
+  copy: src={{ item }} dest=/usr/local/etc/authlib/{{ item }} mode=0644 backup=yes
+  with_items:
+    - authdaemonrc
+  notify: restart courier-authdaemond
+
+- name: Start courier-authdaemond
+  service: name=courier-authdaemond enabled=yes state=started
+
+- block: 
+  - name: Ccopy imapd conf
+    template: src={{ item }}.j2 dest=/usr/local/etc/courier-imap/{{ item }} mode=0644 backup=yes
+    with_items:
+      - imapd
+      - imapd-ssl
+    notify: restart courier-imap-imapd-ssl
+
+  - name: Start courier-imap-imapd-ssl
+    service: name=courier-imap-imapd-ssl enabled=yes state=started
+  when: courier_imap_imapd_ssl_enabled
+
+- name: Stop courier-imap-imapd-ssl
+  service: name=courier-imap-imapd-ssl enabled=no state=stopped
+  when: not courier_imap_imapd_ssl_enabled
+
+- block: 
+  - name: Copy pop3d conf
+    template: src={{ item }}.j2 dest=/usr/local/etc/courier-imap/{{ item }} mode=0644 backup=yes
+    with_items:
+      - pop3d
+      - pop3d-ssl
+    notify: restart courier-imap-pop3d-ssl
+
+  - name: Start courier-imap-pop3d-ssl
+    service: name=courier-imap-pop3d-ssl enabled=yes state=started
+  when: courier_imap_pop3d_ssl_enabled
+  
+- name: Stop courier-imap-pop3d-ssl
+  service: name=courier-imap-pop3d-ssl enabled=no state=stopped
+  when: not courier_imap_pop3d_ssl_enabled
