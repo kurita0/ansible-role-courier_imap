@@ -24,7 +24,7 @@
 
 - name: syslog.d/courier-imap.conf
   copy: src=courier-imap.conf dest=/usr/local/etc/syslog.d/courier-imap.conf mode=0644
-  notify: restart syslog
+  notify: restart syslogd
 
 - name: newsyslog.conf.d/courier-imap
   copy: src=courier-imap dest=/usr/local/etc/newsyslog.conf.d/courier-imap mode=0644
