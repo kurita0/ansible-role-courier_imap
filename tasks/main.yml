@@ -40,7 +40,7 @@
   service: name=courier-authdaemond enabled=yes state=started
 
 - block: 
-  - name: Ccopy imapd conf
+  - name: Copy imapd conf
     template: src={{ item }}.j2 dest=/usr/local/etc/courier-imap/{{ item }} mode=0644 backup=yes
     with_items:
       - imapd
