@@ -47,6 +47,11 @@
       - imapd-ssl
     notify: restart courier-imap-imapd-ssl
 
+  - stat: path=/usr/local/etc/courier-imap/shared/index
+    register: courier_imap_shared_index
+  - name: Create shared index
+    file: path=/usr/local/etc/courier-imap/shared/index state=touch
+
   - name: Start courier-imap-imapd-ssl
     service: name=courier-imap-imapd-ssl enabled=yes state=started
   when: courier_imap_imapd_ssl_enabled
