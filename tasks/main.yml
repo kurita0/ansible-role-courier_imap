@@ -11,16 +11,13 @@
   environment:
     DH_BITS: 2048
 
-- stat: path=/var/log/imapd.log
-  register: var_log_imapd_log
 - name: Create log files
-  file: path={{ item }} state=touch
+  copy: content='' dest={{ item }} force=no
   with_items:
     - /var/log/imapd.log
     - /var/log/imapd-ssl.log 
     - /var/log/pop3d.log
     - /var/log/pop3d-ssl.log
-  when: var_log_imapd_log.stat.exists is defined and not var_log_imapd_log.stat.exists
 
 - name: syslog.d/courier-imap.conf
   copy: src=courier-imap.conf dest=/usr/local/etc/syslog.d/courier-imap.conf mode=0644
@@ -47,10 +44,8 @@
       - imapd-ssl
     notify: restart courier-imap-imapd-ssl
 
-  - stat: path=/usr/local/etc/courier-imap/shared/index
-    register: courier_imap_shared_index
   - name: Create shared index
-    file: path=/usr/local/etc/courier-imap/shared/index state=touch
+    copy: content='' dest=/usr/local/etc/courier-imap/shared/index force=no
 
   - name: Start courier-imap-imapd-ssl
     service: name=courier-imap-imapd-ssl enabled=yes state=started
